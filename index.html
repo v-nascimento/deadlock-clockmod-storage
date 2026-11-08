@@ -1,0 +1,27 @@
+<!doctype html>
+<!-- Clockmod storage page, hosted on GitHub Pages. Deadlock mod scripts
+     can't save anything themselves (test E11), and the game's web panel only
+     opens https pages (test E14), so the mod opens this page in a hidden web
+     panel inside the game. The page keeps the chosen preset in the game
+     browser's own storage and reports it back through its title, the only
+     thing the mod can read:
+       ...#set:<choice>  -> save <choice>
+       any visit         -> title "clockmod:<saved choice>" (empty if none)
+     Changing only the part after # doesn't reload the page, so it also
+     listens for that. Nothing is sent anywhere. -->
+<meta charset="utf-8">
+<title>clockmod:</title>
+<p>Storage for the Deadlock Clockmod: remembers your chosen clock preset inside the game. Nothing is sent anywhere.</p>
+<script>
+function update() {
+	var hash = decodeURIComponent(location.hash.slice(1));
+	try {
+		if (hash.indexOf('set:') === 0) localStorage.setItem('clockmod', hash.slice(4, 104));
+		document.title = 'clockmod:' + (localStorage.getItem('clockmod') || '');
+	} catch (e) {
+		document.title = 'clockmod-error:' + e;
+	}
+}
+update();
+window.addEventListener('hashchange', update);
+</script>
